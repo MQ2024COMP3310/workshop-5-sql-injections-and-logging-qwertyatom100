@@ -5,6 +5,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 //Included for the logging exercise
 import java.io.FileInputStream;
 import java.util.logging.Level;
@@ -74,11 +78,16 @@ public class App {
             String guess = scanner.nextLine();
 
             while (!guess.equals("q")) {
+                Pattern valid = Pattern.compile("^[a-z]{4}$");
+                Matcher validMatch = valid.matcher(guess);
+
                 System.out.println("You've guessed '" + guess+"'.");
 
-                if (wordleDatabaseConnection.isValidWord(guess)) { 
+                if (!validMatch.find()) {
+                    System.out.println("Invalid guess! Your guess must be 4 lowercase letters only.\n");
+                } else if (wordleDatabaseConnection.isValidWord(guess)) { 
                     System.out.println("Success! It is in the the list.\n");
-                }else{
+                } else {
                     System.out.println("Sorry. This word is NOT in the the list.\n");
                 }
 

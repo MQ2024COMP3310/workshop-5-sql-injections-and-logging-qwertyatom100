@@ -9,6 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 //Import for logging exercise
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -125,7 +128,13 @@ public class SQLiteConnectionManager {
      * @param id   the unique id for the word
      * @param word the word to store
      */
-    public void addValidWord(int id, String word) {
+    public void addValidWord(int id, String word) { 
+        Pattern valid = Pattern.compile("^[a-z]{4}$");
+        Matcher validMatch = valid.matcher(word);
+        if (!validMatch.find()) {
+            System.out.println("Invalid word! Not adding.");
+            return; // If there is not a valid match, skip the word
+        }
 
         String sql = "INSERT INTO validWords(id,word) VALUES(?, ?)";
 
