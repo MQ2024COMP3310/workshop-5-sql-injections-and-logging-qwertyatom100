@@ -67,12 +67,12 @@ public class SQLiteConnectionManager {
         try (Connection conn = DriverManager.getConnection(databaseURL)) {
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
+                logger.log(Level.INFO, "The driver name is " + meta.getDriverName());
+                logger.log(Level.INFO, "A new database has been created.");
 
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage(), e);
         }
     }
 
@@ -91,7 +91,7 @@ public class SQLiteConnectionManager {
                     return true;
                 }
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                logger.log(Level.WARNING, e.getMessage(), e);
                 return false;
             }
         }
@@ -116,7 +116,7 @@ public class SQLiteConnectionManager {
                 return true;
 
             } catch (SQLException e) {
-                System.out.println(e.getMessage());
+                logger.log(Level.WARNING, e.getMessage(), e);
                 return false;
             }
         }
@@ -128,12 +128,12 @@ public class SQLiteConnectionManager {
      * @param id   the unique id for the word
      * @param word the word to store
      */
-    public void addValidWord(int id, String word) { 
+    public boolean addValidWord(int id, String word) { 
         Pattern valid = Pattern.compile("^[a-z]{4}$");
         Matcher validMatch = valid.matcher(word);
         if (!validMatch.find()) {
-            System.out.println("Invalid word! Not adding.");
-            return; // If there is not a valid match, skip the word
+            logger.log(Level.SEVERE, "Invalid word read from data file: " + word);
+            return false; // If there is not a valid match, skip the word
         }
 
         String sql = "INSERT INTO validWords(id,word) VALUES(?, ?)";
@@ -143,8 +143,10 @@ public class SQLiteConnectionManager {
                     pstmt.setInt(1, id);
                     pstmt.setString(2, word);
             pstmt.executeUpdate();
+            return true;
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage(), e);
+            return false;
         }
 
     }
@@ -172,7 +174,7 @@ public class SQLiteConnectionManager {
             return false;
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.WARNING, e.getMessage(), e);
             return false;
         }
 

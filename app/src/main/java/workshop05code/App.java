@@ -42,15 +42,15 @@ public class App {
 
         wordleDatabaseConnection.createNewDatabase("words.db");
         if (wordleDatabaseConnection.checkIfConnectionDefined()) {
-            System.out.println("Wordle created and connected.");
+            logger.log(Level.INFO, "Wordle created and connected.");
         } else {
-            System.out.println("Not able to connect. Sorry!");
+            logger.log(Level.WARNING, "Not able to connect. Sorry!");
             return;
         }
         if (wordleDatabaseConnection.createWordleTables()) {
-            System.out.println("Wordle structures in place.");
+            logger.log(Level.INFO, "Wordle structures in place.");
         } else {
-            System.out.println("Not able to launch. Sorry!");
+            logger.log(Level.WARNING, "Not able to launch. Sorry!");
             return;
         }
 
@@ -60,14 +60,15 @@ public class App {
             String line;
             int i = 1;
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
-                wordleDatabaseConnection.addValidWord(i, line);
+                if (wordleDatabaseConnection.addValidWord(i, line)) {
+                    logger.log(Level.INFO, "Word added: " + line);
+                }
                 i++;
             }
 
         } catch (IOException e) {
-            System.out.println("Not able to load . Sorry!");
-            System.out.println(e.getMessage());
+            System.out.println("Unable to load file!");
+            logger.log(Level.WARNING, e.getMessage(), e);
             return;
         }
 
@@ -85,6 +86,7 @@ public class App {
 
                 if (!validMatch.find()) {
                     System.out.println("Invalid guess! Your guess must be 4 lowercase letters only.\n");
+                    logger.log(Level.INFO, "Invalid guess from user: " + guess);
                 } else if (wordleDatabaseConnection.isValidWord(guess)) { 
                     System.out.println("Success! It is in the the list.\n");
                 } else {
